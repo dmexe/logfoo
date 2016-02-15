@@ -38,6 +38,9 @@ end
   exception_handlers/stderr_exception_handler
   app
   context
+  middlewares/err_middleware
+  middlewares/log_middleware
+  middlewares/hutch_error_handler
 }.each do |f|
   require File.expand_path("../logfoo/#{f}", __FILE__)
 end
