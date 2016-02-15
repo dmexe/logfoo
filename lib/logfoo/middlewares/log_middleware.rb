@@ -3,7 +3,8 @@ require 'rack'
 module Logfoo
 
   class LogMiddleware
-    FORMAT = %{%s "%s %s%s %s" %d %s %0.4f}
+    FORMAT  = %{%s "%s %s%s %s" %d %s %0.4f}
+    IGNORED = %w{ /health /_ping }
 
     def initialize(app, log = nil)
       @log = log || Logfoo.get_logger('Rack')
@@ -21,6 +22,8 @@ module Logfoo
     private
 
     def log(env, status, header, began_at)
+      return if ignored?(status, env)
+
       now    = Time.now
       length = extract_content_length(header)
       peer   = env['HTTP_X_FORWARDED_FOR'] || env["REMOTE_ADDR"]
@@ -40,6 +43,10 @@ module Logfoo
 
     def extract_content_length(headers)
       headers[Rack::CONTENT_LENGTH] || 0
+    end
+
+    def ignored?(status, env)
+      status > 199 && status < 299 && IGNORED.include?(env[Rack::PATH_INFO])
     end
   end
 end
