@@ -17,16 +17,8 @@ module Logfoo
     App.instance.stop
   end
 
-  def logfmt_formatter
-    LogfmtFormatter.new
-  end
-
-  def simple_formatter
-    SimpleFormatter.new
-  end
-
-  def io_appender(*args)
-    IoAppender.new(*args)
+  def self.handle_exception(*args)
+    App.handle_exception(*args)
   end
 end
 

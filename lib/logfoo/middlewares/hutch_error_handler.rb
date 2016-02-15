@@ -1,7 +1,7 @@
 module Logfoo
   class HutchErrorHandler
     def handle(message_id, payload, consumer, ex)
-      Logfoo::App.handle_exception(
+      Logfoo.handle_exception(
         ex,
         "Hutch",
         payload:    payload,
