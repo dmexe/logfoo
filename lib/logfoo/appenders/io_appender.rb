@@ -7,7 +7,8 @@ module Logfoo
     end
 
     def call(entry)
-      @formatter.call(entry).each{|line| @io.puts line }
+      @io.write @formatter.call(entry)
+      @io.flush
     end
   end
 end

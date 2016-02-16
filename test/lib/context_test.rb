@@ -3,9 +3,11 @@ require 'test_helper'
 describe Logfoo::Context do
 
   class TestIO < Array
-    def puts(value)
+    def write(value)
       self.push value
     end
+
+    def flush ; end
   end
 
   before do
@@ -69,13 +71,13 @@ describe Logfoo::Context do
     assert_match(/level=info/,                      @test_stdout[0])
     assert_match(/message=message/,                 @test_stdout[0])
     assert_match(/scope=Logfoo::Context/,  @test_stdout[0])
-    assert_match(/foo=bar\z/,                       @test_stdout[0])
+    assert_match(/foo=bar\n/,                       @test_stdout[0])
 
     assert_match(/level=info/,                      @test_stdout[1])
     assert_match(/message=message/,                 @test_stdout[1])
     assert_match(/scope=Logfoo::Context/,  @test_stdout[1])
     assert_match(/foo=overwrite/,                   @test_stdout[1])
-    assert_match(/key=value\z/,                     @test_stdout[1])
+    assert_match(/key=value\n/,                     @test_stdout[1])
   end
 
   it "should handle block" do
@@ -107,12 +109,12 @@ describe Logfoo::Context do
 
     assert_match(/level=info/,                      @test_stdout[0])
     assert_match(/message=boom/,                    @test_stdout[0])
-    assert_match(/exception=RuntimeError\z/,        @test_stdout[0])
+    assert_match(/exception=RuntimeError\n/,        @test_stdout[0])
 
     assert_match(/level=error/,                     @test_stdout[1])
     assert_match(/message=boom/,                    @test_stdout[1])
     assert_match(/exception=RuntimeError/,          @test_stdout[0])
-    assert_match(/key=value\z/,                     @test_stdout[1])
+    assert_match(/key=value\n/,                     @test_stdout[1])
   end
 
   it "should measure block" do

@@ -12,23 +12,23 @@ module Logfoo
       when Entry
         format_entry(entry)
       else
-        [entry_or_ex.to_s]
+        entry.to_s
       end
     end
 
     private
 
       def format_entry(entry)
-        [format_hash(entry.to_h)]
+        "#{format_hash(entry.to_h)}\n"
       end
 
       def format_exception(entry)
-        values = []
-        values << format_hash(entry.to_h)
+        values = ""
+        values << "#{format_hash(entry.to_h)}\n"
         if entry.exception && entry.exception.backtrace.is_a?(Array)
           values <<
             "#{entry.exception.class}: #{entry.exception.message}\n" +
-            entry.exception.backtrace.map{|l| "\t#{l}" }.join("\n")
+            entry.exception.backtrace.map{|l| "\t#{l}\n" }.join
         end
         values
       end
