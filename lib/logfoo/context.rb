@@ -38,6 +38,7 @@ module Logfoo
         return if idx < level
         message = block ? block.call : message
         payload = @context.merge(payload || {})
+
         entry =
           if message.is_a?(Exception)
             ExceptionEntry.new(
@@ -45,7 +46,8 @@ module Logfoo
               Time.now,
               @scope,
               message,
-              payload
+              payload,
+              Thread.current.object_id
             )
           else
             Entry.new(
@@ -53,7 +55,8 @@ module Logfoo
               Time.now,
               @scope,
               message,
-              payload
+              payload,
+              Thread.current.object_id
             )
           end
         @app.append(entry)

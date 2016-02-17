@@ -40,20 +40,25 @@ describe Logfoo::Context do
 
     Logfoo.stop
 
+    tid = Thread.current.object_id
+
     assert_equal 3, @test_stdout.size
     assert_empty @test_stderr
 
-    assert_match(/level=info/,                      @test_stdout[0])
-    assert_match(/message=\"info 1\"/,              @test_stdout[0])
+    assert_match(/level=info/,             @test_stdout[0])
+    assert_match(/message=\"info 1\"/,     @test_stdout[0])
     assert_match(/scope=Logfoo::Context/,  @test_stdout[0])
+    assert_match(/thread=#{tid}/,          @test_stdout[0])
 
-    assert_match(/level=debug/,                     @test_stdout[1])
-    assert_match(/message=\"debug 1\"/,             @test_stdout[1])
+    assert_match(/level=debug/,            @test_stdout[1])
+    assert_match(/message=\"debug 1\"/,    @test_stdout[1])
     assert_match(/scope=Logfoo::Context/,  @test_stdout[1])
+    assert_match(/thread=#{tid}/,          @test_stdout[1])
 
-    assert_match(/level=warn/,                      @test_stdout[2])
-    assert_match(/message=\"warn 1\"/,              @test_stdout[2])
+    assert_match(/level=warn/,             @test_stdout[2])
+    assert_match(/message=\"warn 1\"/,     @test_stdout[2])
     assert_match(/scope=Logfoo::Context/,  @test_stdout[2])
+    assert_match(/thread=#{tid}/,          @test_stdout[2])
   end
 
   it "should merge contexts" do
@@ -109,7 +114,7 @@ describe Logfoo::Context do
 
     assert_match(/level=info/,                      @test_stdout[0])
     assert_match(/message=boom/,                    @test_stdout[0])
-    assert_match(/exception=RuntimeError\n/,        @test_stdout[0])
+    assert_match(/exception=RuntimeError/,          @test_stdout[0])
 
     assert_match(/level=error/,                     @test_stdout[1])
     assert_match(/message=boom/,                    @test_stdout[1])
