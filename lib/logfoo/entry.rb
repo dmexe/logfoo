@@ -6,8 +6,11 @@ module Logfoo
         time:    time    || Time.now,
         message: message,
         scope:   scope,
-        thread:  thread,
-      }.merge!(payload || {})
+      }.merge!(
+        payload || {}
+      ).merge!(
+        thread:  thread
+      )
     end
   end
 
@@ -19,8 +22,11 @@ module Logfoo
         message:   exception.message,
         scope:     scope,
         exception: exception.class.to_s,
-        thread:    thread,
-      }.merge!(payload || {})
+      }.merge!(
+        payload || {}
+      ).merge!(
+        thread:  thread
+      )
     end
   end
 end

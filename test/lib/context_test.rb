@@ -70,19 +70,23 @@ describe Logfoo::Context do
 
     Logfoo.stop
 
+    tid = Thread.current.object_id
+
     assert_equal 2, @test_stdout.size
     assert_empty @test_stderr
 
-    assert_match(/level=info/,                      @test_stdout[0])
-    assert_match(/message=message/,                 @test_stdout[0])
+    assert_match(/level=info/,             @test_stdout[0])
+    assert_match(/message=message/,        @test_stdout[0])
     assert_match(/scope=Logfoo::Context/,  @test_stdout[0])
-    assert_match(/foo=bar\n/,                       @test_stdout[0])
+    assert_match(/foo=bar/,                @test_stdout[0])
+    assert_match(/thread=#{tid}/,          @test_stdout[0])
 
-    assert_match(/level=info/,                      @test_stdout[1])
-    assert_match(/message=message/,                 @test_stdout[1])
+    assert_match(/level=info/,             @test_stdout[1])
+    assert_match(/message=message/,        @test_stdout[1])
     assert_match(/scope=Logfoo::Context/,  @test_stdout[1])
-    assert_match(/foo=overwrite/,                   @test_stdout[1])
-    assert_match(/key=value\n/,                     @test_stdout[1])
+    assert_match(/foo=overwrite/,          @test_stdout[1])
+    assert_match(/key=value/,              @test_stdout[1])
+    assert_match(/thread=#{tid}/,          @test_stdout[1])
   end
 
   it "should handle block" do
@@ -109,17 +113,21 @@ describe Logfoo::Context do
     log.error(ex, key: :value)
     Logfoo.stop
 
+    tid = Thread.current.object_id
+
     assert_equal 2, @test_stdout.size
     assert_empty @test_stderr
 
-    assert_match(/level=info/,                      @test_stdout[0])
-    assert_match(/message=boom/,                    @test_stdout[0])
-    assert_match(/exception=RuntimeError/,          @test_stdout[0])
+    assert_match(/level=info/,              @test_stdout[0])
+    assert_match(/message=boom/,            @test_stdout[0])
+    assert_match(/exception=RuntimeError/,  @test_stdout[0])
+    assert_match(/thread=#{tid}/,           @test_stdout[0])
 
-    assert_match(/level=error/,                     @test_stdout[1])
-    assert_match(/message=boom/,                    @test_stdout[1])
-    assert_match(/exception=RuntimeError/,          @test_stdout[0])
-    assert_match(/key=value\n/,                     @test_stdout[1])
+    assert_match(/level=error/,             @test_stdout[1])
+    assert_match(/message=boom/,            @test_stdout[1])
+    assert_match(/exception=RuntimeError/,  @test_stdout[1])
+    assert_match(/key=value/,               @test_stdout[1])
+    assert_match(/thread=#{tid}/,           @test_stdout[1])
   end
 
   it "should measure block" do
