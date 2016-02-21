@@ -29,7 +29,7 @@ describe Logfoo::App do
 
   after do
     @app.stop
-    Logfoo::App.reset!
+    Logfoo::App._reset!
   end
 
   it "should write messages using low level api" do
@@ -47,7 +47,7 @@ describe Logfoo::App do
     assert_empty @test_stderr
 
     assert_match(/level=info/,                  @test_stdout.join(""))
-    assert_match(/message=\"boom!\"/,           @test_stdout.join(""))
+    assert_match(/msg=\"boom!\"/,               @test_stdout.join(""))
     assert_match(/scope=Logfoo::App /,          @test_stdout.join(""))
     assert_match(/foo=bar/,                     @test_stdout.join(""))
     assert_match(/baz=1,2,3/,                   @test_stdout.join(""))
@@ -70,8 +70,8 @@ describe Logfoo::App do
     assert_equal 1, @test_stdout.size
 
     assert_match(/level=error/,                 @test_stdout.join(""))
-    assert_match(/message=\"boom!\"/,           @test_stdout.join(""))
-    assert_match(/exception=\"#<Class/,         @test_stdout.join(""))
+    assert_match(/msg=\"boom!\"/,               @test_stdout.join(""))
+    assert_match(/err=\"#<Class/,               @test_stdout.join(""))
     assert_match(/scope=Logfoo::App /,          @test_stdout.join(""))
     assert_match(/foo=bar/,                     @test_stdout.join(""))
     assert_match(/\: boom!\n/,                  @test_stdout.join(""))
@@ -86,9 +86,9 @@ describe Logfoo::App do
     assert_equal 1, @test_stderr.size
 
     assert_match(/level=error/,                 @test_stderr.join(""))
-    assert_match(/message=\"ignore me"/,        @test_stderr.join(""))
-    assert_match(/exception=RuntimeError/,      @test_stderr.join(""))
-    assert_match(/scope=Logfoo::App/,  @test_stderr.join(""))
+    assert_match(/msg=\"ignore me"/,            @test_stderr.join(""))
+    assert_match(/err=RuntimeError/,            @test_stderr.join(""))
+    assert_match(/scope=Logfoo::App/,           @test_stderr.join(""))
     assert_match(/RuntimeError: ignore me\n/,   @test_stderr.join(""))
     assert_match(/`block in main_loop'\n/,      @test_stderr.join(""))
   end

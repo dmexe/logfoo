@@ -8,17 +8,15 @@ module Logfoo
 
   LEVELS = ['TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL'].freeze
 
-  def self.get_logger(scope, context = nil)
+  extend self
+
+  def get_logger(scope, context = nil)
     App.instance.start unless App.instance.started?
     Context.new(App.instance, scope.to_s, context)
   end
 
-  def self.stop
+  def stop
     App.instance.stop
-  end
-
-  def self.handle_exception(*args)
-    App.handle_exception(*args)
   end
 end
 
@@ -30,9 +28,8 @@ end
   exception_handlers/stderr_exception_handler
   app
   context
-  middlewares/err_middleware
-  middlewares/log_middleware
-  middlewares/hutch_error_handler
 }.each do |f|
   require File.expand_path("../logfoo/#{f}", __FILE__)
 end
+
+at_exit { Logfoo.stop }

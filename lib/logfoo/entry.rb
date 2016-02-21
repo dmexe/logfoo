@@ -4,7 +4,7 @@ module Logfoo
       {
         level:   level   || :info,
         time:    time    || Time.now,
-        message: message,
+        msg:     message,
         scope:   scope,
       }.merge!(
         payload || {}
@@ -19,9 +19,9 @@ module Logfoo
       {
         level:     level || :error,
         time:      time  || Time.now,
-        message:   exception.message,
+        msg:       exception.message,
         scope:     scope,
-        exception: exception.class.to_s,
+        err:       exception.class.to_s,
       }.merge!(
         payload || {}
       ).merge!(

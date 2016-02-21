@@ -1,9 +1,13 @@
+require 'time'
+
 module Logfoo
   class LogfmtFormatter
 
-    UNESCAPED_STRING = /\A[\w\.\-\+\%\,\:\;\/]*\z/i
-
-    IGNORED_FIELDS = [:time]
+    UNESCAPED_STRING = /\A[\w\.\-\+\%\,\:\;\/]*\z/i.freeze
+    IGNORED_KEYS     = [:time]
+    FLOAT_FORMAT     = '%0.4f'.freeze
+    BACKTRACE_LINE   = "\t%s\n".freeze
+    EXCEPTION_LINE   = "%s: %s".freeze
 
     def call(entry)
       case entry
@@ -23,19 +27,17 @@ module Logfoo
       end
 
       def format_exception(entry)
-        values = ""
-        values << "#{format_hash(entry.to_h)}\n"
+        values = [format_hash(entry.to_h)]
         if entry.exception && entry.exception.backtrace.is_a?(Array)
-          values <<
-            "#{entry.exception.class}: #{entry.exception.message}\n" +
-            entry.exception.backtrace.map{|l| "\t#{l}\n" }.join
+          values << (EXCEPTION_LINE % [entry.exception.class, entry.exception.message])
+          values << entry.exception.backtrace.map{|l| BACKTRACE_LINE % l }.join
         end
-        values
+        values.join("\n")
       end
 
       def format_hash(attrs)
         attrs.inject([]) do |ac, (k,v)|
-          if !IGNORED_FIELDS.include?(k) && !(v == nil || v == "")
+          if !IGNORED_KEYS.include?(k) && !(v == nil || v == "")
             new_value = sanitize(v)
             ac << "#{k}=#{new_value}"
           end
@@ -46,17 +48,19 @@ module Logfoo
       def sanitize(v)
         case v
         when ::Array
-          may_quote v.join(",")
+          may_quote v.map{|i| i.to_s}.join(",")
         when ::Integer, ::Symbol
           v.to_s
         when ::Float
-          "%0.4f" % v
-        when ::TrueClass, ::FalseClass
-          v ? "t" : "f"
-        when Time
-          quote v.utc.to_s
+          FLOAT_FORMAT % v
+        when ::TrueClass
+          :t
+        when ::FalseClass
+          :f
+        when ::Time
+          v.utc.iso8601
         else
-          may_quote(v.to_s)
+          may_quote v.to_s
         end
       end
 

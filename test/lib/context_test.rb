@@ -4,6 +4,7 @@ describe Logfoo::Context do
 
   class TestIO < Array
     def write(value)
+      $stdout.write value
       self.push value
     end
 
@@ -26,7 +27,7 @@ describe Logfoo::Context do
 
   after do
     Logfoo::App.instance.stop
-    Logfoo::App.reset!
+    Logfoo::App._reset!
   end
 
   it "should write messages" do
@@ -46,17 +47,17 @@ describe Logfoo::Context do
     assert_empty @test_stderr
 
     assert_match(/level=info/,             @test_stdout[0])
-    assert_match(/message=\"info 1\"/,     @test_stdout[0])
+    assert_match(/msg=\"info 1\"/,         @test_stdout[0])
     assert_match(/scope=Logfoo::Context/,  @test_stdout[0])
     assert_match(/thread=#{tid}/,          @test_stdout[0])
 
     assert_match(/level=debug/,            @test_stdout[1])
-    assert_match(/message=\"debug 1\"/,    @test_stdout[1])
+    assert_match(/msg=\"debug 1\"/,        @test_stdout[1])
     assert_match(/scope=Logfoo::Context/,  @test_stdout[1])
     assert_match(/thread=#{tid}/,          @test_stdout[1])
 
     assert_match(/level=warn/,             @test_stdout[2])
-    assert_match(/message=\"warn 1\"/,     @test_stdout[2])
+    assert_match(/msg=\"warn 1\"/,         @test_stdout[2])
     assert_match(/scope=Logfoo::Context/,  @test_stdout[2])
     assert_match(/thread=#{tid}/,          @test_stdout[2])
   end
@@ -76,13 +77,13 @@ describe Logfoo::Context do
     assert_empty @test_stderr
 
     assert_match(/level=info/,             @test_stdout[0])
-    assert_match(/message=message/,        @test_stdout[0])
+    assert_match(/msg=message/,            @test_stdout[0])
     assert_match(/scope=Logfoo::Context/,  @test_stdout[0])
     assert_match(/foo=bar/,                @test_stdout[0])
     assert_match(/thread=#{tid}/,          @test_stdout[0])
 
     assert_match(/level=info/,             @test_stdout[1])
-    assert_match(/message=message/,        @test_stdout[1])
+    assert_match(/msg=message/,            @test_stdout[1])
     assert_match(/scope=Logfoo::Context/,  @test_stdout[1])
     assert_match(/foo=overwrite/,          @test_stdout[1])
     assert_match(/key=value/,              @test_stdout[1])
@@ -99,10 +100,10 @@ describe Logfoo::Context do
     assert_empty @test_stderr
 
     assert_match(/level=info/,                      @test_stdout[0])
-    assert_match(/message=\"block message\"/,       @test_stdout[0])
+    assert_match(/msg=\"block message\"/,           @test_stdout[0])
 
     assert_match(/level=info/,                      @test_stdout[1])
-    assert_match(/message=\"block message 2\"/,     @test_stdout[1])
+    assert_match(/msg=\"block message 2\"/,         @test_stdout[1])
     assert_match(/foo=bar/,                         @test_stdout[1])
   end
 
@@ -119,13 +120,13 @@ describe Logfoo::Context do
     assert_empty @test_stderr
 
     assert_match(/level=info/,              @test_stdout[0])
-    assert_match(/message=boom/,            @test_stdout[0])
-    assert_match(/exception=RuntimeError/,  @test_stdout[0])
+    assert_match(/msg=boom/,                @test_stdout[0])
+    assert_match(/err=RuntimeError/,        @test_stdout[0])
     assert_match(/thread=#{tid}/,           @test_stdout[0])
 
     assert_match(/level=error/,             @test_stdout[1])
-    assert_match(/message=boom/,            @test_stdout[1])
-    assert_match(/exception=RuntimeError/,  @test_stdout[1])
+    assert_match(/msg=boom/,                @test_stdout[1])
+    assert_match(/err=RuntimeError/,        @test_stdout[1])
     assert_match(/key=value/,               @test_stdout[1])
     assert_match(/thread=#{tid}/,           @test_stdout[1])
   end
@@ -139,7 +140,7 @@ describe Logfoo::Context do
     assert_empty @test_stderr
 
     assert_match(/level=info/,                      @test_stdout[0])
-    assert_match(/message=message/,                 @test_stdout[0])
+    assert_match(/msg=message/,                     @test_stdout[0])
     assert_match(/duration=0\.10/,                  @test_stdout[0])
   end
 end

@@ -1,6 +1,8 @@
 module Logfoo
   class SimpleFormatter < LogfmtFormatter
 
+    FORMAT = "[%5s]: %s - %s%s".freeze
+
     private
 
       def format_hash(attrs)
@@ -8,14 +10,14 @@ module Logfoo
         message = attrs.delete(:message)
         scope   = attrs.delete(:scope)
 
-        IGNORED_FIELDS.each do |f|
+        IGNORED_KEYS.each do |f|
           attrs.delete(f)
         end
 
         payload = super(attrs)
         payload = payload.empty? ? "" : " [#{payload}]"
         message = message.to_s.empty? ? "" : " #{message}"
-        "[%5s]: #{scope} -#{message}#{payload}" % level.upcase
+        FORMAT % [level.upcase, scope, message, payload]
       end
   end
 end

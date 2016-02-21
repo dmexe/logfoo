@@ -6,6 +6,8 @@ module Logfoo
 
     include Singleton
 
+    IGNORE_ME_ERROR = RuntimeError.new("ignore me")
+
     def initialize
       @queue = Queue.new
       @lock  = Mutex.new
@@ -38,15 +40,6 @@ module Logfoo
 
     private
 
-      def new_entry(msg)
-        Entry.new(
-          :info,
-          Time.now,
-          self.class,
-          msg
-        )
-      end
-
       def main_loop ; Thread.new do
         begin
           loop do
@@ -55,42 +48,42 @@ module Logfoo
               break
             end
             if entry == :boom
-              raise RuntimeError.new("ignore me")
+              raise IGNORE_ME_ERROR
             end
-            App.append(entry)
+            App._append(entry)
           end
         rescue Exception => ex
-          App.handle_exception(ex, self.class)
+          App._handle_exception(ex, self.class)
           retry
         end
       end ; end
   end
 
-  class App
-    class << self
+  class App ; class << self
+    @@appenders          = []
+    @@exception_handlers = []
+
+    def appenders(*fn)
+      @@appenders = fn.flatten
+    end
+
+    def exception_handlers(*fn)
+      @@exception_handlers = fn.flatten
+    end
+
+    def _handle_exception(ex, scope = nil, context = {})
+      @@exception_handlers.each{|fn| fn.call(ex, scope, context) }
+    end
+
+    def _append(entry)
+      @@appenders.each{|fn| fn.call(entry) }
+    end
+
+    def _reset!
       @@appenders          = [IoAppender.new]
       @@exception_handlers = [StderrExceptionHanlder.new]
-
-      def appenders(*fn)
-        @@appenders = fn.flatten
-      end
-
-      def exception_handlers(*fn)
-        @@exception_handlers = fn.flatten
-      end
-
-      def append(entry)
-        @@appenders.each{|fn| fn.call(entry) }
-      end
-
-      def handle_exception(ex, scope = nil, context = {})
-        @@exception_handlers.each{|fn| fn.call(ex, scope, context) }
-      end
-
-      def reset!
-        @@appenders          = [IoAppender.new]
-        @@exception_handlers = [StderrExceptionHanlder.new]
-      end
     end
-  end
+  end ; end
+
+  App._reset!
 end
