@@ -8,6 +8,8 @@ module Logfoo
 
   LEVELS = ['TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL'].freeze
 
+  autoload :Rack, File.expand_path("../logfoo/integrations/rack", __FILE__)
+
   extend self
 
   def get_logger(scope, context = nil)

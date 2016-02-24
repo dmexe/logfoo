@@ -2,33 +2,7 @@ require 'test_helper'
 
 describe Logfoo::Context do
 
-  class TestIO < Array
-    def write(value)
-      $stdout.write value
-      self.push value
-    end
-
-    def flush ; end
-  end
-
-  before do
-    @test_stdout = TestIO.new
-    @test_stderr = TestIO.new
-
-    Logfoo::App.appenders(
-      Logfoo::IoAppender.new(@test_stdout)
-    )
-    Logfoo::App.exception_handlers(
-      Logfoo::StderrExceptionHanlder.new(
-        Logfoo::IoAppender.new(@test_stderr)
-      )
-    )
-  end
-
-  after do
-    Logfoo::App.instance.stop
-    Logfoo::App._reset!
-  end
+  include TestIOHelper
 
   it "should write messages" do
     log = Logfoo.get_logger(self.class)
@@ -43,23 +17,23 @@ describe Logfoo::Context do
 
     tid = Thread.current.object_id
 
-    assert_equal 3, @test_stdout.size
-    assert_empty @test_stderr
+    assert_equal 3, log_stdout.size
+    assert_empty log_stderr
 
-    assert_match(/level=info/,             @test_stdout[0])
-    assert_match(/msg=\"info 1\"/,         @test_stdout[0])
-    assert_match(/scope=Logfoo::Context/,  @test_stdout[0])
-    assert_match(/thread=#{tid}/,          @test_stdout[0])
+    assert_match(/level=info/,             log_stdout[0])
+    assert_match(/msg=\"info 1\"/,         log_stdout[0])
+    assert_match(/scope=Logfoo::Context/,  log_stdout[0])
+    assert_match(/thread=#{tid}/,          log_stdout[0])
 
-    assert_match(/level=debug/,            @test_stdout[1])
-    assert_match(/msg=\"debug 1\"/,        @test_stdout[1])
-    assert_match(/scope=Logfoo::Context/,  @test_stdout[1])
-    assert_match(/thread=#{tid}/,          @test_stdout[1])
+    assert_match(/level=debug/,            log_stdout[1])
+    assert_match(/msg=\"debug 1\"/,        log_stdout[1])
+    assert_match(/scope=Logfoo::Context/,  log_stdout[1])
+    assert_match(/thread=#{tid}/,          log_stdout[1])
 
-    assert_match(/level=warn/,             @test_stdout[2])
-    assert_match(/msg=\"warn 1\"/,         @test_stdout[2])
-    assert_match(/scope=Logfoo::Context/,  @test_stdout[2])
-    assert_match(/thread=#{tid}/,          @test_stdout[2])
+    assert_match(/level=warn/,             log_stdout[2])
+    assert_match(/msg=\"warn 1\"/,         log_stdout[2])
+    assert_match(/scope=Logfoo::Context/,  log_stdout[2])
+    assert_match(/thread=#{tid}/,          log_stdout[2])
   end
 
   it "should merge contexts" do
@@ -73,21 +47,21 @@ describe Logfoo::Context do
 
     tid = Thread.current.object_id
 
-    assert_equal 2, @test_stdout.size
-    assert_empty @test_stderr
+    assert_equal 2, log_stdout.size
+    assert_empty log_stderr
 
-    assert_match(/level=info/,             @test_stdout[0])
-    assert_match(/msg=message/,            @test_stdout[0])
-    assert_match(/scope=Logfoo::Context/,  @test_stdout[0])
-    assert_match(/foo=bar/,                @test_stdout[0])
-    assert_match(/thread=#{tid}/,          @test_stdout[0])
+    assert_match(/level=info/,             log_stdout[0])
+    assert_match(/msg=message/,            log_stdout[0])
+    assert_match(/scope=Logfoo::Context/,  log_stdout[0])
+    assert_match(/foo=bar/,                log_stdout[0])
+    assert_match(/thread=#{tid}/,          log_stdout[0])
 
-    assert_match(/level=info/,             @test_stdout[1])
-    assert_match(/msg=message/,            @test_stdout[1])
-    assert_match(/scope=Logfoo::Context/,  @test_stdout[1])
-    assert_match(/foo=overwrite/,          @test_stdout[1])
-    assert_match(/key=value/,              @test_stdout[1])
-    assert_match(/thread=#{tid}/,          @test_stdout[1])
+    assert_match(/level=info/,             log_stdout[1])
+    assert_match(/msg=message/,            log_stdout[1])
+    assert_match(/scope=Logfoo::Context/,  log_stdout[1])
+    assert_match(/foo=overwrite/,          log_stdout[1])
+    assert_match(/key=value/,              log_stdout[1])
+    assert_match(/thread=#{tid}/,          log_stdout[1])
   end
 
   it "should handle block" do
@@ -96,15 +70,15 @@ describe Logfoo::Context do
     log.info("message", foo: :bar) { "block message 2" }
     Logfoo.stop
 
-    assert_equal 2, @test_stdout.size
-    assert_empty @test_stderr
+    assert_equal 2, log_stdout.size
+    assert_empty log_stderr
 
-    assert_match(/level=info/,                      @test_stdout[0])
-    assert_match(/msg=\"block message\"/,           @test_stdout[0])
+    assert_match(/level=info/,              log_stdout[0])
+    assert_match(/msg=\"block message\"/,   log_stdout[0])
 
-    assert_match(/level=info/,                      @test_stdout[1])
-    assert_match(/msg=\"block message 2\"/,         @test_stdout[1])
-    assert_match(/foo=bar/,                         @test_stdout[1])
+    assert_match(/level=info/,              log_stdout[1])
+    assert_match(/msg=\"block message 2\"/, log_stdout[1])
+    assert_match(/foo=bar/,                 log_stdout[1])
   end
 
   it "should handle exceptions" do
@@ -116,19 +90,19 @@ describe Logfoo::Context do
 
     tid = Thread.current.object_id
 
-    assert_equal 2, @test_stdout.size
-    assert_empty @test_stderr
+    assert_equal 2, log_stdout.size
+    assert_empty log_stderr
 
-    assert_match(/level=info/,              @test_stdout[0])
-    assert_match(/msg=boom/,                @test_stdout[0])
-    assert_match(/err=RuntimeError/,        @test_stdout[0])
-    assert_match(/thread=#{tid}/,           @test_stdout[0])
+    assert_match(/level=info/,       log_stdout[0])
+    assert_match(/msg=boom/,         log_stdout[0])
+    assert_match(/err=RuntimeError/, log_stdout[0])
+    assert_match(/thread=#{tid}/,    log_stdout[0])
 
-    assert_match(/level=error/,             @test_stdout[1])
-    assert_match(/msg=boom/,                @test_stdout[1])
-    assert_match(/err=RuntimeError/,        @test_stdout[1])
-    assert_match(/key=value/,               @test_stdout[1])
-    assert_match(/thread=#{tid}/,           @test_stdout[1])
+    assert_match(/level=error/,      log_stdout[1])
+    assert_match(/msg=boom/,         log_stdout[1])
+    assert_match(/err=RuntimeError/, log_stdout[1])
+    assert_match(/key=value/,        log_stdout[1])
+    assert_match(/thread=#{tid}/,    log_stdout[1])
   end
 
   it "should measure block" do
@@ -136,11 +110,11 @@ describe Logfoo::Context do
     log.measure("message") { sleep 0.1 }
     Logfoo.stop
 
-    assert_equal 1, @test_stdout.size
-    assert_empty @test_stderr
+    assert_equal 1, log_stdout.size
+    assert_empty log_stderr
 
-    assert_match(/level=info/,                      @test_stdout[0])
-    assert_match(/msg=message/,                     @test_stdout[0])
-    assert_match(/duration=0\.10/,                  @test_stdout[0])
+    assert_match(/level=info/,     log_stdout[0])
+    assert_match(/msg=message/,    log_stdout[0])
+    assert_match(/duration=0\.10/, log_stdout[0])
   end
 end

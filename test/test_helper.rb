@@ -11,3 +11,8 @@ reporters << Minitest::Reporters::JUnitReporter.new if ENV['CI']
 Minitest::Reporters.use! reporters
 
 require File.expand_path("../../lib/logfoo", __FILE__)
+
+Dir["test/support/*.rb"].each do |fname|
+  load fname
+end
+

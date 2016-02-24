@@ -15,13 +15,13 @@ module Logfoo::Rack
       began_at = Time.now
       status, header, body = @app.call(env)
       header = R::Utils::HeaderHash.new(header)
-      body   = R::BodyProxy.new(body) { log(env, status, header, began_at) }
+      body   = R::BodyProxy.new(body) { log(env, status, header, began_at, body) }
       [status, header, body]
     end
 
     private
 
-    def log(env, status, header, began_at)
+    def log(env, status, header, began_at, body)
       return if ignored?(status, env)
 
       now    = Time.now
@@ -34,7 +34,7 @@ module Logfoo::Rack
         path:     path,
         query:    env[R::QUERY_STRING],
         status:   status.to_s[0..3],
-        reslen:   headers[R::CONTENT_LENGTH] || 0,
+        reslen:   header[R::CONTENT_LENGTH] || (body && body.bytesize) || 0,
         reqlen:   env[R::CONTENT_LENGTH] || 0,
         addr:     addr,
         duration: now - began_at
