@@ -6,14 +6,10 @@ module Logfoo
     UNESCAPED_STRING = /\A[\w\.\-\+\%\,\:\;\/]*\z/i.freeze
     IGNORED_KEYS     = [:time]
     FLOAT_FORMAT     = '%0.4f'.freeze
-    BACKTRACE_LINE   = "\t%s\n".freeze
-    EXCEPTION_LINE   = "%s: %s".freeze
 
     def call(entry)
       case entry
-      when ExceptionEntry
-        format_exception(entry)
-      when Entry
+      when ExceptionEntry, Entry
         format_entry(entry)
       else
         entry.to_s
@@ -24,15 +20,6 @@ module Logfoo
 
       def format_entry(entry)
         "#{format_hash(entry.to_h)}\n"
-      end
-
-      def format_exception(entry)
-        values = [format_hash(entry.to_h)]
-        if entry.exception && entry.exception.backtrace.is_a?(Array)
-          values << (EXCEPTION_LINE % [entry.exception.class, entry.exception.message])
-          values << entry.exception.backtrace.map{|l| BACKTRACE_LINE % l }.join
-        end
-        values.join("\n")
       end
 
       def format_hash(attrs)

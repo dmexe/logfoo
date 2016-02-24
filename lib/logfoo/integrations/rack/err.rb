@@ -16,9 +16,7 @@ module Logfoo::Rack
       [Rack::Utils::HTTP_STATUS_CODES[500]],
     ].freeze
 
-
     def initialize(app, log = nil)
-      @log = log || Logfoo.get_logger(LOGGER_NAME)
       @app = app
     end
 
@@ -26,16 +24,22 @@ module Logfoo::Rack
       response = @app.call(env)
 
       if framework_error = FRAMEWORK_ERRORS.find { |k| env[k] }
-        @log.error(framework_error, clean_env(env))
+        append(framework_error, env)
       end
 
       response
     rescue Exception => e
-      @log.error(e, clean_env(env))
+      append(e, env)
       INTERNAL_SERVER_ERROR
     end
 
     private
+
+    def append(e, env)
+      env   = clean_env(env)
+      entry = Logfoo::ExceptionEntry.build(LOGGER_NAME, e, env)
+      Logfoo::App.instance.append(entry)
+    end
 
     def clean_env(env)
       env.inject({}) do |ac, (key, value) |

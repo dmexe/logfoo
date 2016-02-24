@@ -15,6 +15,19 @@ module Logfoo
   end
 
   ExceptionEntry = Struct.new(:level, :time, :scope, :exception, :payload, :thread) do
+    class << self
+      def build(scope, ex, payload = nil, options = {})
+        self.new(
+          options[:level],
+          Time.now,
+          scope,
+          ex,
+          payload,
+          Thread.current.object_id
+        )
+      end
+    end
+
     def to_h
       {
         level:     level || :error,

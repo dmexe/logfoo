@@ -1,13 +1,13 @@
 module Logfoo
   class SimpleFormatter < LogfmtFormatter
 
-    FORMAT = "[%5s]: %s - %s%s".freeze
+    FORMAT = "[%5s]: %s -%s%s".freeze
 
     private
 
       def format_hash(attrs)
         level   = attrs.delete(:level)
-        message = attrs.delete(:message)
+        message = attrs.delete(:msg)
         scope   = attrs.delete(:scope)
 
         IGNORED_KEYS.each do |f|

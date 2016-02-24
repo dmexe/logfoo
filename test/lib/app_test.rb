@@ -38,7 +38,7 @@ describe Logfoo::App do
     log_app.append(entry)
     log_app.stop
 
-    assert_empty log_stderr
+    assert_equal 1, log_stderr.size
     assert_equal 1, log_stdout.size
 
     assert_match(/level=error/,                 log_stdout.join(""))
@@ -46,8 +46,8 @@ describe Logfoo::App do
     assert_match(/err=\"#<Class/,               log_stdout.join(""))
     assert_match(/scope=Logfoo::App /,          log_stdout.join(""))
     assert_match(/foo=bar/,                     log_stdout.join(""))
-    assert_match(/\: boom!\n/,                  log_stdout.join(""))
-    assert_match(/\tbacktrace line\n/,          log_stdout.join(""))
+    assert_match(/\: boom!\n/,                  log_stderr.join(""))
+    assert_match(/\tbacktrace line\n/,          log_stderr.join(""))
   end
 
   it "should handle low level errors" do
@@ -57,10 +57,6 @@ describe Logfoo::App do
     assert_empty log_stdout
     assert_equal 1, log_stderr.size
 
-    assert_match(/level=error/,                 log_stderr.join(""))
-    assert_match(/msg=\"ignore me"/,            log_stderr.join(""))
-    assert_match(/err=RuntimeError/,            log_stderr.join(""))
-    assert_match(/scope=Logfoo::App/,           log_stderr.join(""))
     assert_match(/RuntimeError: ignore me\n/,   log_stderr.join(""))
     assert_match(/`block in main_loop'\n/,      log_stderr.join(""))
   end

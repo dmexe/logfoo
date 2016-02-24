@@ -41,14 +41,7 @@ module Logfoo
 
         entry =
           if message.is_a?(Exception)
-            ExceptionEntry.new(
-              level_id,
-              Time.now,
-              @scope,
-              message,
-              payload,
-              Thread.current.object_id
-            )
+            ExceptionEntry.build(@scope, message, payload, level: level_id)
           else
             Entry.new(
               level_id,

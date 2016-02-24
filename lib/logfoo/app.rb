@@ -11,6 +11,8 @@ module Logfoo
     def initialize
       @queue = Queue.new
       @lock  = Mutex.new
+
+      start
     end
 
     def start
@@ -51,9 +53,11 @@ module Logfoo
               raise IGNORE_ME_ERROR
             end
             App._append(entry)
+            App._handle_exception(entry) if entry.is_a?(ExceptionEntry)
           end
         rescue Exception => ex
-          App._handle_exception(ex, self.class)
+          entry = ExceptionEntry.build(self.class, ex)
+          App._handle_exception(entry)
           retry
         end
       end ; end
@@ -71,8 +75,8 @@ module Logfoo
       @@exception_handlers = fn.flatten
     end
 
-    def _handle_exception(ex, scope = nil, context = {})
-      @@exception_handlers.each{|fn| fn.call(ex, scope, context) }
+    def _handle_exception(entry)
+      @@exception_handlers.each{|fn| fn.call(entry) }
     end
 
     def _append(entry)
@@ -80,8 +84,8 @@ module Logfoo
     end
 
     def _reset!
-      @@appenders          = [IoAppender.new]
-      @@exception_handlers = [StderrExceptionHanlder.new]
+      appenders IoAppender.new
+      exception_handlers StderrExceptionHanlder.new
     end
   end ; end
 

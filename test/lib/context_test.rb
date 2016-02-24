@@ -90,8 +90,10 @@ describe Logfoo::Context do
 
     tid = Thread.current.object_id
 
+    puts log_stderr.join("\n")
+
     assert_equal 2, log_stdout.size
-    assert_empty log_stderr
+    assert_equal 2, log_stderr.size
 
     assert_match(/level=info/,       log_stdout[0])
     assert_match(/msg=boom/,         log_stdout[0])
@@ -103,6 +105,9 @@ describe Logfoo::Context do
     assert_match(/err=RuntimeError/, log_stdout[1])
     assert_match(/key=value/,        log_stdout[1])
     assert_match(/thread=#{tid}/,    log_stdout[1])
+
+    expect(log_stderr[0]).must_equal "RuntimeError: boom\n"
+    expect(log_stderr[1]).must_equal "RuntimeError: boom\n"
   end
 
   it "should measure block" do

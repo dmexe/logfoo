@@ -7,7 +7,11 @@ module Logfoo
     end
 
     def call(entry)
-      @io.write @formatter.call(entry)
+      write @formatter.call(entry)
+    end
+
+    def write(body)
+      @io.write body
       @io.flush
     end
   end

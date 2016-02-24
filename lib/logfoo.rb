@@ -13,7 +13,6 @@ module Logfoo
   extend self
 
   def get_logger(scope, context = nil)
-    App.instance.start unless App.instance.started?
     Context.new(App.instance, scope.to_s, context)
   end
 

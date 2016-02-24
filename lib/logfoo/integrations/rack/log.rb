@@ -34,8 +34,7 @@ module Logfoo::Rack
         path:     path,
         query:    env[R::QUERY_STRING],
         status:   status.to_s[0..3],
-        reslen:   header[R::CONTENT_LENGTH] || (body && body.bytesize) || 0,
-        reqlen:   env[R::CONTENT_LENGTH] || 0,
+        len:      header[R::CONTENT_LENGTH] || 0,
         addr:     addr,
         duration: now - began_at
       }
