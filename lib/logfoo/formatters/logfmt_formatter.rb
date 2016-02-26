@@ -36,7 +36,7 @@ module Logfoo
         case v
         when ::Array
           if k == :backtrace
-            "[" + v.map{|i| may_quote i.to_s}.join(",") + "]"
+            quote v.map{|i| i.to_s }.join(",")
           else
             may_quote v.map{|i| i.to_s }.join(",")
           end

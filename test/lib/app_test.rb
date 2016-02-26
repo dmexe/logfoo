@@ -56,10 +56,12 @@ describe Logfoo::App do
     assert_empty log_stdout
     assert_equal 1, log_stderr.size
 
+    puts log_stderr.join("")
+
     assert_match("level=error msg=\"ignore me\"", log_stderr.join(""))
     assert_match("scope=Logfoo::App",             log_stderr.join(""))
     assert_match("exception=RuntimeError",        log_stderr.join(""))
-    assert_match("backtrace=[",                   log_stderr.join(""))
+    assert_match("backtrace=\"",                  log_stderr.join(""))
     assert_match("block in main_loop",            log_stderr.join(""))
   end
 end
