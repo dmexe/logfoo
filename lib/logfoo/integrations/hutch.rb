@@ -17,7 +17,7 @@ module Logfoo ; module Hutch
     end
 
     def handle(message_id, payload, consumer, ex)
-      entry = Context.build(
+      entry = ExceptionEntry.build(
         ID,
         ex,
         payload:    payload,
