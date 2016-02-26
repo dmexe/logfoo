@@ -1,7 +1,7 @@
 module Logfoo
   class Context
 
-    attr_reader :level
+    attr_reader :level, :scope
 
     def initialize(app, scope, context = nil)
       @app     = app

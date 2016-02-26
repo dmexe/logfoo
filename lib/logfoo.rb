@@ -19,6 +19,10 @@ module Logfoo
   def stop
     App.instance.stop
   end
+
+  def mixin(name: nil)
+    Logfoo::Mixin
+  end
 end
 
 %w{
@@ -29,6 +33,7 @@ end
   exception_handlers/stderr_exception_handler
   app
   context
+  mixin
 }.each do |f|
   require File.expand_path("../logfoo/#{f}", __FILE__)
 end
