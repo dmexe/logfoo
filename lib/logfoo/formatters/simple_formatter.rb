@@ -1,9 +1,31 @@
 module Logfoo
   class SimpleFormatter < LogfmtFormatter
 
-    FORMAT = "[%5s]: %s -%s%s".freeze
+    FORMAT           = "[%5s]: %s -%s%s".freeze
+    BACKTRACE_LINE   = "\t%s\n".freeze
+    EXCEPTION_LINE   = "%s: %s\n".freeze
 
     private
+
+      def format_entry(entry)
+        attrs = entry.to_h
+        attrs.delete(:backtrace)
+        str = []
+        str << "#{format_hash(entry.to_h)}\n"
+        if entry.is_a?(ExceptionEntry)
+          str << format_exception(entry)
+        end
+        str.join("")
+      end
+
+      def format_exception(entry)
+        values = []
+        values << (EXCEPTION_LINE % [entry.exception.class, entry.exception.message])
+        if entry.exception.backtrace.is_a?(Array)
+          values << entry.exception.backtrace.map{|l| BACKTRACE_LINE % l }.join
+        end
+        values.join
+      end
 
       def format_hash(attrs)
         level   = attrs.delete(:level)

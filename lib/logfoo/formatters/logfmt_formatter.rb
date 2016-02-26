@@ -25,17 +25,21 @@ module Logfoo
       def format_hash(attrs)
         attrs.inject([]) do |ac, (k,v)|
           if !IGNORED_KEYS.include?(k) && !(v == nil || v == "")
-            new_value = sanitize(v)
+            new_value = sanitize(k, v)
             ac << "#{k}=#{new_value}"
           end
           ac
         end.join(" ")
       end
 
-      def sanitize(v)
+      def sanitize(k, v)
         case v
         when ::Array
-          may_quote v.map{|i| i.to_s}.join(",")
+          if k == :backtrace
+            "[" + v.map{|i| may_quote i.to_s}.join(",") + "]"
+          else
+            may_quote v.map{|i| i.to_s }.join(",")
+          end
         when ::Integer, ::Symbol
           v.to_s
         when ::Float

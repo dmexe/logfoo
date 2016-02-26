@@ -46,14 +46,16 @@ module Logfoo
         begin
           loop do
             entry = @queue.pop
-            if entry == :shutdown
+            case entry
+            when :shutdown
               break
-            end
-            if entry == :boom
+            when :boom
               raise IGNORE_ME_ERROR
+            when ExceptionEntry
+              App._handle_exception(entry)
+            else
+              App._append(entry)
             end
-            App._append(entry)
-            App._handle_exception(entry) if entry.is_a?(ExceptionEntry)
           end
         rescue Exception => ex
           entry = ExceptionEntry.build(self.class, ex)

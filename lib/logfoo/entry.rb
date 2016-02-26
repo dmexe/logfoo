@@ -34,11 +34,12 @@ module Logfoo
         time:      time  || Time.now,
         msg:       exception.message,
         scope:     scope,
-        err:       exception.class.to_s,
+        exception: exception.class.to_s,
       }.merge!(
         payload || {}
       ).merge!(
-        thread:  thread
+        thread:    thread,
+        backtrace: exception.backtrace,
       )
     end
   end

@@ -2,6 +2,11 @@ module Logfoo
   class IoAppender
     def initialize(io = nil, formatter = nil)
       @io        = io || STDOUT
+
+      if @io.respond_to?(:sync=)
+        @io.sync = true
+      end
+
       is_tty     = @io.respond_to?(:tty?) && @io.tty?
       @formatter = formatter || (is_tty ? SimpleFormatter.new : LogfmtFormatter.new)
     end

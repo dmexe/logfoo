@@ -30,7 +30,7 @@ describe "Rack" do
     get '/'
     log_app.stop
     expect(last_response.body).must_equal 'body'
-    expect(log_stdout.join("\n")).must_include "level=info msg=\"GET /\" scope=Rack method=GET path=/ status=200 len=4 addr=127.0.0.1"
+    expect(log_stdout.join("\n")).must_include "level=info msg=\"GET /\" scope=Rack method=GET path=/ status=200 len=0 addr=127.0.0.1"
     expect(log_stderr).must_be_empty
   end
 
@@ -40,7 +40,6 @@ describe "Rack" do
     log_app.stop
     expect(last_response.body).must_equal "Internal Server Error"
     expect(log_stdout.join("\n")).must_include "level=info msg=\"GET /\" scope=Rack method=GET path=/ status=500 len=21 addr=127.0.0.1"
-    expect(log_stdout.join("\n")).must_include "level=error msg=boom scope=Rack err=RuntimeError REQUEST_METHOD=GET"
-    expect(log_stderr.join("\n")).must_include "RuntimeError: boom\n"
+    expect(log_stderr.join("\n")).must_include "level=error msg=boom scope=Rack exception=RuntimeError REQUEST_METHOD=GET"
   end
 end
