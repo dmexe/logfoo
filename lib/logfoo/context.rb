@@ -33,31 +33,34 @@ module Logfoo
     end
 
     Logfoo::LEVELS.each_with_index do |lv, idx|
-      level_id = lv.downcase.to_sym
-
-      define_method :"#{level_id}?" do
+      define_method :"#{lv.downcase}?" do
         idx >= level
       end
+    end
+
+    Logfoo::LEVELS.each_with_index do |lv, idx|
+      level_id = lv.downcase.to_sym
 
       define_method level_id do |message = nil, payload = nil, &block|
-        return if idx < level
-        message = block ? block.call : message
-        payload = @context.merge(payload || {})
+        if idx >= level
+          message = block ? block.call : message
+          payload = @context.merge(payload || {})
 
-        entry =
-          if message.is_a?(Exception)
-            ExceptionEntry.build(@scope, message, payload, level: level_id)
-          else
-            Entry.new(
-              level_id,
-              Time.now,
-              @scope,
-              message,
-              payload,
-              Thread.current.object_id
-            )
-          end
-        @app.append(entry)
+          entry =
+            if message.is_a?(Exception)
+              ExceptionEntry.build(@scope, message, payload, level: level_id)
+            else
+              Entry.new(
+                level_id,
+                Time.now,
+                @scope,
+                message,
+                payload,
+                Thread.current.object_id
+              )
+            end
+          @app.append(entry)
+        end
       end
     end
   end

@@ -38,4 +38,8 @@ end
   require File.expand_path("../logfoo/#{f}", __FILE__)
 end
 
-at_exit { Logfoo.stop }
+if defined?(Minitest)
+  Minitest.after_run { Logfoo.stop }
+else
+  at_exit { Logfoo.stop }
+end
