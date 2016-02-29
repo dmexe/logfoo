@@ -34,6 +34,11 @@ module Logfoo
 
     Logfoo::LEVELS.each_with_index do |lv, idx|
       level_id = lv.downcase.to_sym
+
+      define_method :"#{level_id}?" do
+        idx >= level
+      end
+
       define_method level_id do |message = nil, payload = nil, &block|
         return if idx < level
         message = block ? block.call : message

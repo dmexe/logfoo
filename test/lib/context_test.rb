@@ -4,6 +4,18 @@ describe Logfoo::Context do
 
   include TestIOHelper
 
+  it "should handle levels" do
+    log = Logfoo.get_logger(self.class)
+    log.level = Logfoo::DEBUG
+    expect(log.trace?).must_equal false
+    expect(log.debug?).must_equal true
+    expect(log.info?).must_equal true
+    log.level = Logfoo::INFO
+    expect(log.trace?).must_equal false
+    expect(log.debug?).must_equal false
+    expect(log.info?).must_equal true
+  end
+
   it "should write messages" do
     log = Logfoo.get_logger(self.class)
     log.info  "info 1"
