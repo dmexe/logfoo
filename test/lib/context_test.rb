@@ -53,7 +53,9 @@ describe Logfoo::Context do
     log.info  "message", foo: :bar
 
     log = Logfoo.get_logger(self.class, foo: :bar)
-    log.info  "message", foo: :overwrite, key: :value
+    log.context key: :value do
+      log.info  "message", foo: :overwrite
+    end
 
     Logfoo.stop
 

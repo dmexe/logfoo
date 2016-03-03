@@ -1,6 +1,8 @@
 module Logfoo
   class Context
 
+    THREAD_ID = :logfoo_context
+
     attr_reader :level, :scope
 
     def initialize(app, scope, context = nil)
@@ -19,6 +21,21 @@ module Logfoo
         @context.delete(k)
       else
         @context[k] = v
+      end
+    end
+
+    def context(keys = nil)
+      if block_given?
+        keys ||= {}
+        begin
+          Thread.current[THREAD_ID] = keys
+          yield
+        ensure
+          Thread.current[THREAD_ID] = nil
+        end
+      else
+        keys = Thread.current[THREAD_ID] || {}
+        @context.merge(keys)
       end
     end
 
@@ -44,7 +61,7 @@ module Logfoo
       define_method level_id do |message = nil, payload = nil, &block|
         if idx >= level
           message = block ? block.call : message
-          payload = @context.merge(payload || {})
+          payload = context.merge(payload || {})
 
           entry =
             if message.is_a?(Exception)
