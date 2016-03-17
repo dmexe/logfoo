@@ -54,14 +54,23 @@ describe Logfoo::Context do
 
     log = Logfoo.get_logger(self.class, foo: :bar)
     log.context key: :value do
-      log.info  "message", foo: :overwrite
+      log.info  "first", foo: :overwrite
+      log.context key2: :value2, key3: :value3 do
+        log.info  "second"
+        log.context key2: :replaced do
+          log.info "third"
+        end
+        log.info  "secondout"
+      end
+      log.info "firstout", foo: :overwrite
     end
+    log.info "end"
 
     Logfoo.stop
 
     tid = Thread.current.object_id
 
-    assert_equal 2, log_stdout.size
+    assert_equal 7, log_stdout.size
     assert_empty log_stderr
 
     assert_match(/level=info/,             log_stdout[0])
@@ -71,11 +80,41 @@ describe Logfoo::Context do
     assert_match(/thread=#{tid}/,          log_stdout[0])
 
     assert_match(/level=info/,             log_stdout[1])
-    assert_match(/msg=message/,            log_stdout[1])
+    assert_match(/msg=first/ ,             log_stdout[1])
     assert_match(/scope=Logfoo::Context/,  log_stdout[1])
-    assert_match(/foo=overwrite/,          log_stdout[1])
     assert_match(/key=value/,              log_stdout[1])
     assert_match(/thread=#{tid}/,          log_stdout[1])
+
+    assert_match(/level=info/,             log_stdout[2])
+    assert_match(/msg=second/ ,            log_stdout[2])
+    assert_match(/scope=Logfoo::Context/,  log_stdout[2])
+    assert_match(/key=value/,              log_stdout[2])
+    assert_match(/key2=value2/,            log_stdout[2])
+    assert_match(/key3=value3/,            log_stdout[2])
+
+    assert_match(/level=info/,             log_stdout[3])
+    assert_match(/msg=third/ ,             log_stdout[3])
+    assert_match(/scope=Logfoo::Context/,  log_stdout[3])
+    assert_match(/key=value/,              log_stdout[3])
+    assert_match(/key2=replaced/,          log_stdout[3])
+    assert_match(/key3=value3/,            log_stdout[3])
+
+    assert_match(/level=info/,             log_stdout[4])
+    assert_match(/msg=secondout/ ,         log_stdout[4])
+    assert_match(/scope=Logfoo::Context/,  log_stdout[4])
+    assert_match(/key=value/,              log_stdout[4])
+    assert_match(/key2=value2/,            log_stdout[4])
+    assert_match(/key3=value3/,            log_stdout[4])
+
+    assert_match(/level=info/,             log_stdout[5])
+    assert_match(/msg=firstout/ ,          log_stdout[5])
+    assert_match(/scope=Logfoo::Context/,  log_stdout[5])
+    assert_match(/key=value/,              log_stdout[5])
+
+    assert_match(/level=info/,             log_stdout[6])
+    assert_match(/msg=end/,                log_stdout[6])
+    assert_match(/scope=Logfoo::Context/,  log_stdout[6])
+    assert_match(/foo=bar/,                log_stdout[6])
   end
 
   it "should handle block" do

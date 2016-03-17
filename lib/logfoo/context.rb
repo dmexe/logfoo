@@ -1,15 +1,14 @@
 module Logfoo
   class Context
 
-    THREAD_ID = :logfoo_context
-
-    attr_reader :level, :scope
+    attr_reader :level, :scope, :thread_id
 
     def initialize(app, scope, context = nil)
-      @app     = app
-      @scope   = scope
-      @level   = Logfoo::DEBUG
-      @context = context || {}
+      @app          = app
+      @scope        = scope
+      @thread_id    = :"logfoo_context_#{scope}"
+      @level        = Logfoo::DEBUG
+      @context      = context || {}
     end
 
     def level=(level)
@@ -28,13 +27,22 @@ module Logfoo
       if block_given?
         keys ||= {}
         begin
-          Thread.current[THREAD_ID] = keys
+          Thread.current[thread_id] ||= []
+          Thread.current[thread_id].push(keys)
           yield
         ensure
-          Thread.current[THREAD_ID] = nil
+          Thread.current[thread_id].pop
+          if Thread.current[thread_id] == []
+            Thread.current[thread_id] = nil
+          end
         end
       else
-        keys = Thread.current[THREAD_ID] || {}
+        keys = (Thread.current[thread_id] || []).inject({}) do |memo, kvs|
+          kvs.each do |(k,v)|
+            memo.merge!(k => v)
+          end
+          memo
+        end
         @context.merge(keys)
       end
     end
