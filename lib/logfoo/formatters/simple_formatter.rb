@@ -11,7 +11,7 @@ module Logfoo
         attrs = entry.to_h
         attrs.delete(:backtrace)
         str = []
-        str << "#{format_hash(entry.to_h)}\n"
+        str << "#{remove_nl format_hash(entry.to_h)}\n"
         if entry.is_a?(ExceptionEntry)
           str << format_exception(entry)
         end
@@ -30,7 +30,7 @@ module Logfoo
       def format_hash(attrs)
         level   = attrs.delete(:level)
         message = attrs.delete(:msg)
-        scope   = attrs.delete(:scope)
+        logger  = attrs.delete(:logger)
 
         IGNORED_KEYS.each do |f|
           attrs.delete(f)
@@ -39,7 +39,7 @@ module Logfoo
         payload = super(attrs)
         payload = payload.empty? ? "" : " [#{payload}]"
         message = message.to_s.empty? ? "" : " #{message}"
-        FORMAT % [level.upcase, scope, message, payload]
+        FORMAT % [level.upcase, logger, message, payload]
       end
   end
 end

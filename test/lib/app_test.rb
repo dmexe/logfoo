@@ -56,8 +56,6 @@ describe Logfoo::App do
     assert_empty log_stdout
     assert_equal 1, log_stderr.size
 
-    puts log_stderr.join("")
-
     assert_match("level=error msg=\"ignore me\"", log_stderr.join(""))
     assert_match("logger=Logfoo::App",            log_stderr.join(""))
     assert_match("err=RuntimeError",              log_stderr.join(""))

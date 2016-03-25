@@ -11,9 +11,9 @@ module Logfoo
     def call(entry)
       case entry
       when ExceptionEntry, Entry
-        remove_nl format_entry(entry)
+        format_entry(entry)
       else
-        remove_nl entry.to_s
+        "#{remove_nl entry.to_s}\n"
       end
     end
 
@@ -24,7 +24,7 @@ module Logfoo
       end
 
       def format_entry(entry)
-        "#{format_hash(entry.to_h)}\n"
+        "#{remove_nl format_hash(entry.to_h)}\n"
       end
 
       def format_hash(attrs)
