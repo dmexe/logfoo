@@ -1,12 +1,13 @@
 module Logfoo
   class Context
 
-    attr_reader :level, :scope, :thread_id
+    attr_reader :level, :name, :thread_id
 
-    def initialize(app, scope, context = nil)
+    THREAD_CONTEXT = :"logfoo_context"
+
+    def initialize(app, name, context = nil)
       @app          = app
-      @scope        = scope
-      @thread_id    = :"logfoo_context_#{scope}"
+      @name         = name
       @level        = Logfoo::DEBUG
       @context      = context || {}
     end
@@ -27,17 +28,17 @@ module Logfoo
       if block_given?
         keys ||= {}
         begin
-          Thread.current[thread_id] ||= []
-          Thread.current[thread_id].push(keys)
+          Thread.current[THREAD_CONTEXT] ||= []
+          Thread.current[THREAD_CONTEXT].push(keys)
           yield
         ensure
-          Thread.current[thread_id].pop
-          if Thread.current[thread_id] == []
-            Thread.current[thread_id] = nil
+          Thread.current[THREAD_CONTEXT].pop
+          if Thread.current[THREAD_CONTEXT] == []
+            Thread.current[THREAD_CONTEXT] = nil
           end
         end
       else
-        keys = (Thread.current[thread_id] || []).inject({}) do |memo, kvs|
+        keys = (Thread.current[THREAD_CONTEXT] || []).inject({}) do |memo, kvs|
           kvs.each do |(k,v)|
             memo.merge!(k => v)
           end
@@ -73,12 +74,12 @@ module Logfoo
 
           entry =
             if message.is_a?(Exception)
-              ExceptionEntry.build(@scope, message, payload, level: level_id)
+              ExceptionEntry.build(@name, message, payload, level: level_id)
             else
               Entry.new(
                 level_id,
                 Time.now,
-                @scope,
+                @name,
                 message,
                 payload,
                 Thread.current.object_id

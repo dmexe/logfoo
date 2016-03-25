@@ -37,8 +37,16 @@ module Logfoo::Rack
 
     def append(e, env)
       env   = clean_env(env)
+      env   = prefix_env(env)
       entry = Logfoo::ExceptionEntry.build(LOGGER_NAME, e, env)
       Logfoo::App.instance.append(entry)
+    end
+
+    def prefix_env(env)
+      env.inject({}) do |ac, (key, value)|
+        ac.merge!("env.#{key}" => value)
+        ac
+      end
     end
 
     def clean_env(env)

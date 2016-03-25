@@ -1,11 +1,11 @@
 module Logfoo
-  Entry = Struct.new(:level, :time, :scope, :message, :payload, :thread) do
+  Entry = Struct.new(:level, :time, :logger_name, :message, :payload, :thread) do
     def to_h
       {
         level:   level   || :info,
         time:    time    || Time.now,
         msg:     message,
-        scope:   scope,
+        logger:  logger_name,
       }.merge!(
         payload || {}
       ).merge!(
@@ -14,13 +14,13 @@ module Logfoo
     end
   end
 
-  ExceptionEntry = Struct.new(:level, :time, :scope, :exception, :payload, :thread) do
+  ExceptionEntry = Struct.new(:level, :time, :logger_name, :exception, :payload, :thread) do
     class << self
-      def build(scope, ex, payload = nil, options = {})
+      def build(logger_name, ex, payload = nil, options = {})
         self.new(
           options[:level],
           Time.now,
-          scope,
+          logger_name,
           ex,
           payload,
           Thread.current.object_id
@@ -30,16 +30,16 @@ module Logfoo
 
     def to_h
       {
-        level:     level || :error,
-        time:      time  || Time.now,
-        msg:       exception.message,
-        scope:     scope,
-        exception: exception.class.to_s,
+        level:  level || :error,
+        time:   time  || Time.now,
+        msg:    exception.message,
+        logger: logger_name,
+        err:    exception.class.to_s,
       }.merge!(
         payload || {}
       ).merge!(
-        thread:    thread,
-        backtrace: exception.backtrace,
+        thread:     thread,
+        stacktrace: exception.backtrace,
       )
     end
   end

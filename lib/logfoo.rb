@@ -12,8 +12,8 @@ module Logfoo
 
   extend self
 
-  def get_logger(scope, context = nil)
-    Context.new(App.instance, scope.to_s, context)
+  def get_logger(name, context = nil)
+    Context.new(App.instance, name.to_s, context)
   end
 
   def stop

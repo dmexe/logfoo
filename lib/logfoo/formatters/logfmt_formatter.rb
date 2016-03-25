@@ -4,19 +4,24 @@ module Logfoo
   class LogfmtFormatter
 
     UNESCAPED_STRING = /\A[\w\.\-\+\%\,\:\;\/]*\z/i.freeze
+    STACKTRACE_RE    = /^(.+?):(\d+):in `(.+)'$/.freeze
     IGNORED_KEYS     = [:time]
     FLOAT_FORMAT     = '%0.4f'.freeze
 
     def call(entry)
       case entry
       when ExceptionEntry, Entry
-        format_entry(entry)
+        remove_nl format_entry(entry)
       else
-        entry.to_s
+        remove_nl entry.to_s
       end
     end
 
     private
+
+      def remove_nl(s)
+        s.tr("\n", ' ')
+      end
 
       def format_entry(entry)
         "#{format_hash(entry.to_h)}\n"
@@ -32,11 +37,25 @@ module Logfoo
         end.join(" ")
       end
 
+      def format_stacktrace(stack)
+        stack =
+          stack.inject([]) do |ac, line|
+            if line.match(STACKTRACE_RE)
+              ac.push [$1,$2,$3].join(":")
+            end
+            ac
+          end
+        if stack.any?
+          "\"#{stack.join(",")}\""
+        end
+      end
+
       def sanitize(k, v)
         case v
         when ::Array
-          if k == :backtrace
-            quote v.map{|i| i.to_s }.join(",")
+          if k == :stacktrace
+            format_stacktrace(v)
+            #quote v.map{|i| i.to_s }.join(",")
           else
             may_quote v.map{|i| i.to_s }.join(",")
           end

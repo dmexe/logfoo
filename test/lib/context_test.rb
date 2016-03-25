@@ -34,17 +34,17 @@ describe Logfoo::Context do
 
     assert_match(/level=info/,             log_stdout[0])
     assert_match(/msg=\"info 1\"/,         log_stdout[0])
-    assert_match(/scope=Logfoo::Context/,  log_stdout[0])
+    assert_match(/logger=Logfoo::Context/, log_stdout[0])
     assert_match(/thread=#{tid}/,          log_stdout[0])
 
     assert_match(/level=debug/,            log_stdout[1])
     assert_match(/msg=\"debug 1\"/,        log_stdout[1])
-    assert_match(/scope=Logfoo::Context/,  log_stdout[1])
+    assert_match(/logger=Logfoo::Context/, log_stdout[1])
     assert_match(/thread=#{tid}/,          log_stdout[1])
 
     assert_match(/level=warn/,             log_stdout[2])
     assert_match(/msg=\"warn 1\"/,         log_stdout[2])
-    assert_match(/scope=Logfoo::Context/,  log_stdout[2])
+    assert_match(/logger=Logfoo::Context/, log_stdout[2])
     assert_match(/thread=#{tid}/,          log_stdout[2])
   end
 
@@ -75,45 +75,45 @@ describe Logfoo::Context do
 
     assert_match(/level=info/,             log_stdout[0])
     assert_match(/msg=message/,            log_stdout[0])
-    assert_match(/scope=Logfoo::Context/,  log_stdout[0])
+    assert_match(/logger=Logfoo::Context/, log_stdout[0])
     assert_match(/foo=bar/,                log_stdout[0])
     assert_match(/thread=#{tid}/,          log_stdout[0])
 
     assert_match(/level=info/,             log_stdout[1])
     assert_match(/msg=first/ ,             log_stdout[1])
-    assert_match(/scope=Logfoo::Context/,  log_stdout[1])
+    assert_match(/logger=Logfoo::Context/, log_stdout[1])
     assert_match(/key=value/,              log_stdout[1])
     assert_match(/thread=#{tid}/,          log_stdout[1])
 
     assert_match(/level=info/,             log_stdout[2])
     assert_match(/msg=second/ ,            log_stdout[2])
-    assert_match(/scope=Logfoo::Context/,  log_stdout[2])
+    assert_match(/logger=Logfoo::Context/, log_stdout[2])
     assert_match(/key=value/,              log_stdout[2])
     assert_match(/key2=value2/,            log_stdout[2])
     assert_match(/key3=value3/,            log_stdout[2])
 
     assert_match(/level=info/,             log_stdout[3])
     assert_match(/msg=third/ ,             log_stdout[3])
-    assert_match(/scope=Logfoo::Context/,  log_stdout[3])
+    assert_match(/logger=Logfoo::Context/, log_stdout[3])
     assert_match(/key=value/,              log_stdout[3])
     assert_match(/key2=replaced/,          log_stdout[3])
     assert_match(/key3=value3/,            log_stdout[3])
 
     assert_match(/level=info/,             log_stdout[4])
     assert_match(/msg=secondout/ ,         log_stdout[4])
-    assert_match(/scope=Logfoo::Context/,  log_stdout[4])
+    assert_match(/logger=Logfoo::Context/, log_stdout[4])
     assert_match(/key=value/,              log_stdout[4])
     assert_match(/key2=value2/,            log_stdout[4])
     assert_match(/key3=value3/,            log_stdout[4])
 
     assert_match(/level=info/,             log_stdout[5])
     assert_match(/msg=firstout/ ,          log_stdout[5])
-    assert_match(/scope=Logfoo::Context/,  log_stdout[5])
+    assert_match(/logger=Logfoo::Context/, log_stdout[5])
     assert_match(/key=value/,              log_stdout[5])
 
     assert_match(/level=info/,             log_stdout[6])
     assert_match(/msg=end/,                log_stdout[6])
-    assert_match(/scope=Logfoo::Context/,  log_stdout[6])
+    assert_match(/logger=Logfoo::Context/, log_stdout[6])
     assert_match(/foo=bar/,                log_stdout[6])
   end
 
@@ -148,12 +148,12 @@ describe Logfoo::Context do
 
     assert_match(/level=info/,             log_stderr[0])
     assert_match(/msg=boom/,               log_stderr[0])
-    assert_match(/exception=RuntimeError/, log_stderr[0])
+    assert_match(/err=RuntimeError/,       log_stderr[0])
     assert_match(/thread=#{tid}/,          log_stderr[0])
 
     assert_match(/level=error/,            log_stderr[1])
     assert_match(/msg=boom/,               log_stderr[1])
-    assert_match(/exception=RuntimeError/, log_stderr[1])
+    assert_match(/err=RuntimeError/,       log_stderr[1])
     assert_match(/key=value/,              log_stderr[1])
     assert_match(/thread=#{tid}/,          log_stderr[1])
   end
