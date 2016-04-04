@@ -41,12 +41,12 @@ module Logfoo
         stack =
           stack.inject([]) do |ac, line|
             if line.match(STACKTRACE_RE)
-              ac.push [$1,$2,$3].join(":")
+              ac.push "[#{$1}:#{$2}:#{$3}]"
             end
             ac
           end
         if stack.any?
-          "\"#{stack.join(",")}\""
+          "\"#{stack.join("")}\""
         end
       end
 

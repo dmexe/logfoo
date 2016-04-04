@@ -9,8 +9,9 @@ module Logfoo
     IGNORE_ME_ERROR = RuntimeError.new("ignore me")
 
     def initialize
-      @queue = Queue.new
-      @lock  = Mutex.new
+      @queue  = Queue.new
+      @lock   = Mutex.new
+      @thread = nil
 
       start
     end

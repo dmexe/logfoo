@@ -46,7 +46,7 @@ describe Logfoo::App do
     assert_match(/err=\"#<Class/,               log_stderr.join(""))
     assert_match(/logger=Logfoo::App /,         log_stderr.join(""))
     assert_match(/foo=bar/,                     log_stderr.join(""))
-    assert_match(/stacktrace=\"file:10:foo,file:20:bar\"/, log_stderr.join(""))
+    assert_match(/stacktrace=\"\[file:10:foo\]\[file:20:bar\]"/, log_stderr.join(""))
   end
 
   it "should handle low level errors" do
