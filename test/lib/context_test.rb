@@ -170,4 +170,17 @@ describe Logfoo::Context do
     assert_match(/msg=message/,    log_stdout[0])
     assert_match(/duration=0\.10/, log_stdout[0])
   end
+
+  it "should call" do
+    log = Logfoo.get_logger(self.class)
+    log.call(2, "progname", "message")
+    log.call(3, "progname", nil) { "block" }
+    Logfoo.stop
+
+    assert_match(/level=info/,     log_stdout[0])
+    assert_match(/msg=message/,    log_stdout[0])
+
+    assert_match(/level=warn/,     log_stdout[1])
+    assert_match(/msg=block/,      log_stdout[1])
+  end
 end

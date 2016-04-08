@@ -58,6 +58,13 @@ module Logfoo
       re
     end
 
+    def call(level, progname, message, &block)
+      lv = Logfoo::LEVELS[level]
+      if lv
+        public_send(lv.downcase, message, &block)
+      end
+    end
+
     Logfoo::LEVELS.each_with_index do |lv, idx|
       define_method :"#{lv.downcase}?" do
         idx >= level
