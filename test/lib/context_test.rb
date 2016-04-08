@@ -171,10 +171,10 @@ describe Logfoo::Context do
     assert_match(/duration=0\.10/, log_stdout[0])
   end
 
-  it "should call" do
+  it "should write by add method" do
     log = Logfoo.get_logger(self.class)
-    log.call(2, "progname", "message")
-    log.call(3, "progname", nil) { "block" }
+    log.add(2, "message")
+    log.add(3, nil) { "block" }
     Logfoo.stop
 
     assert_match(/level=info/,     log_stdout[0])
