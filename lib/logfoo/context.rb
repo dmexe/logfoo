@@ -58,7 +58,7 @@ module Logfoo
       re
     end
 
-    def add(level, message, &block)
+    def add(level, message, progname, &block)
       lv = Logfoo::LEVELS[level]
       if lv
         public_send(lv.downcase, message, &block)

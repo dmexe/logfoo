@@ -173,8 +173,8 @@ describe Logfoo::Context do
 
   it "should write by add method" do
     log = Logfoo.get_logger(self.class)
-    log.add(2, "message")
-    log.add(3, nil) { "block" }
+    log.add(2, "message", nil)
+    log.add(3, nil, nil) { "block" }
     Logfoo.stop
 
     assert_match(/level=info/,     log_stdout[0])
