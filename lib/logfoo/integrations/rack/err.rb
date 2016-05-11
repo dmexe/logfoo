@@ -3,7 +3,7 @@ module Logfoo::Rack
   class Err
 
     TEXT_PLAIN            = 'text/plain'.freeze
-    CLEAN_RE              =  /\A(rack|puma)\./.freeze
+    CLEAN_RE              =  /\A(rack|puma|grape)\./.freeze
 
     FRAMEWORK_ERRORS      = %w{ action_dispatch.exception sinatra.error }.freeze
 
