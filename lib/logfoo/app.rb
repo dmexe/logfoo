@@ -37,8 +37,8 @@ module Logfoo
       end
     end
 
-    def append(entry)
-      @queue.push(entry) if @thread
+    def append(line)
+      @queue.push(line) if @thread
     end
 
     private
@@ -46,21 +46,21 @@ module Logfoo
       def main_loop ; Thread.new do
         begin
           loop do
-            entry = @queue.pop
-            case entry
+            line = @queue.pop
+            case line
             when :shutdown
               break
             when :boom
               raise IGNORE_ME_ERROR
-            when ExceptionEntry
-              App._handle_exception(entry)
+            when ErrLine
+              App._handle_exception(line)
             else
-              App._append(entry)
+              App._append(line)
             end
           end
         rescue Exception => ex
-          entry = ExceptionEntry.build(self.class, ex)
-          App._handle_exception(entry)
+          line = ErrLine.build(logger_name: self.class, exception: ex)
+          App._handle_exception(line)
           retry
         end
       end ; end

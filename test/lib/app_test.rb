@@ -5,12 +5,10 @@ describe Logfoo::App do
   include TestIOHelper
 
   it "should write messages using low level api" do
-    entry = Logfoo::Entry.new(
-      :info,
-      Time.now,
-      self.class.to_s,
-      "boom!",
-      { foo: "bar", baz: [1,2,3], key: true }
+    entry = Logfoo::LogLine.build(
+      logger_name: self.class.to_s,
+      message:     "boom!",
+      payload:     { foo: "bar", baz: [1,2,3], key: true }
     )
     log_app.append(entry)
     log_app.stop
@@ -28,12 +26,10 @@ describe Logfoo::App do
 
   it "should write exception using low level api" do
     err   = Struct.new(:message, :backtrace).new("boom!", ["file:10:in `foo'", "noop", "file:20:in `bar'"])
-    entry = Logfoo::ExceptionEntry.new(
-      :error,
-      Time.now,
-      self.class.to_s,
-      err,
-      { foo: "bar" }
+    entry = Logfoo::ErrLine.build(
+      logger_name: self.class.to_s,
+      exception:   err,
+      payload:     { foo: "bar" }
     )
     log_app.append(entry)
     log_app.stop

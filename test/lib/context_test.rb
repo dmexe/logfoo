@@ -134,6 +134,22 @@ describe Logfoo::Context do
     assert_match(/foo=bar/,                 log_stdout[1])
   end
 
+  it "should handle block with argument" do
+    log = Logfoo.get_logger(self.class)
+    log.info do |p|
+      p.merge!(arity: 1)
+      "block message"
+    end
+    Logfoo.stop
+
+    assert_equal 1, log_stdout.size
+    assert_empty log_stderr
+
+    assert_match(/level=info/,              log_stdout[0])
+    assert_match(/msg=\"block message\"/,   log_stdout[0])
+    assert_match(/arity=1/,                 log_stdout[0])
+  end
+
   it "should handle exceptions" do
     ex = RuntimeError.new("boom")
     log = Logfoo.get_logger(self.class)
@@ -160,15 +176,38 @@ describe Logfoo::Context do
 
   it "should measure block" do
     log = Logfoo.get_logger(self.class)
-    log.measure("message") { sleep 0.1 }
+    re  = log.measure.info("message") do
+      sleep 0.1
+      :ok
+    end
     Logfoo.stop
 
+    assert_equal :ok, re
     assert_equal 1, log_stdout.size
     assert_empty log_stderr
 
     assert_match(/level=info/,     log_stdout[0])
     assert_match(/msg=message/,    log_stdout[0])
     assert_match(/duration=0\.10/, log_stdout[0])
+  end
+
+  it "should measure block with arguments" do
+    log = Logfoo.get_logger(self.class)
+    re  = log.measure.info("message") do |p|
+      p[:arity] = 1
+      sleep 0.1
+      :ok
+    end
+    Logfoo.stop
+
+    assert_equal :ok, re
+    assert_equal 1, log_stdout.size
+    assert_empty log_stderr
+
+    assert_match(/level=info/,     log_stdout[0])
+    assert_match(/msg=message/,    log_stdout[0])
+    assert_match(/duration=0\.10/, log_stdout[0])
+    assert_match(/arity=1/,        log_stdout[0])
   end
 
   it "should write by add method" do

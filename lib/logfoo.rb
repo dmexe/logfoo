@@ -26,11 +26,12 @@ module Logfoo
 end
 
 %w{
-  entry
+  entries
   formatters/logfmt_formatter
   formatters/simple_formatter
   appenders/io_appender
   exception_handlers/stderr_exception_handler
+  measure
   app
   context
   mixin
