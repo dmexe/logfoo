@@ -14,12 +14,7 @@ class TestIO ; class << self
     self.stderr = TestIO.new
 
     Logfoo::App.appenders(
-      Logfoo::IoAppender.new(self.stdout)
-    )
-    Logfoo::App.exception_handlers(
-      Logfoo::StderrExceptionHanlder.new(
-        Logfoo::IoAppender.new(self.stderr)
-      )
+      Logfoo::IoAppender.new(out: self.stdout, err: self.stderr)
     )
 
     self.app = Logfoo::App.instance

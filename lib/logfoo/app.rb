@@ -52,34 +52,23 @@ module Logfoo
               break
             when :boom
               raise IGNORE_ME_ERROR
-            when ErrLine
-              App._handle_exception(line)
             else
               App._append(line)
             end
           end
         rescue Exception => ex
           line = ErrLine.build(logger_name: self.class, exception: ex)
-          App._handle_exception(line)
+          App._append(line)
           retry
         end
       end ; end
   end
 
   class App ; class << self
-    @@appenders          = []
-    @@exception_handlers = []
+    @@appenders = []
 
     def appenders(*fn)
       @@appenders = fn.flatten
-    end
-
-    def exception_handlers(*fn)
-      @@exception_handlers = fn.flatten
-    end
-
-    def _handle_exception(entry)
-      @@exception_handlers.each{|fn| fn.call(entry) }
     end
 
     def _append(entry)
@@ -88,7 +77,6 @@ module Logfoo
 
     def _reset!
       appenders IoAppender.new
-      exception_handlers StderrExceptionHanlder.new
     end
   end ; end
 

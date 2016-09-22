@@ -1,21 +1,41 @@
 module Logfoo ; class IoAppender
-  def initialize(io = nil, formatter = nil)
-    @io        = io || STDOUT
 
-    if @io.respond_to?(:sync=)
-      @io.sync = true
-    end
+  def initialize(out: nil, err: nil, formatter: nil)
+    @stdout    = out || STDOUT
+    @stderr    = err || STDERR
+    @formatter = formatter || (tty? ? SimpleFormatter.new : LogfmtFormatter.new)
 
-    is_tty     = @io.respond_to?(:tty?) && @io.tty?
-    @formatter = formatter || (is_tty ? SimpleFormatter.new : LogfmtFormatter.new)
+    sync!
   end
 
   def call(entry)
-    write @formatter.call(entry)
+    io =
+      case entry
+      when ErrLine
+        @stderr
+      else
+        @stdout
+      end
+
+    io.write @formatter.call(entry)
+    io.flush
   end
 
-  def write(body)
-    @io.write body
-    @io.flush
+  def tty?
+    [@stdout, @stderr].inject(true) do |memo, io|
+      if memo
+        memo = io.respond_to?(:tty?) && io.tty?
+      end
+      memo
+    end
   end
+
+  def sync!
+    [@stdout, @stderr].each do |io|
+      if io.respond_to?(:sync=)
+        io.sync = true
+      end
+    end
+  end
+
 end ; end

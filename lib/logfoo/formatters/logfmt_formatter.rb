@@ -12,7 +12,7 @@ module Logfoo ; class LogfmtFormatter
     when ErrLine, LogLine
       format_line(line)
     else
-      "#{remove_nl entry.to_s}\n"
+      "#{remove_nl line.to_s}\n"
     end
   end
 
