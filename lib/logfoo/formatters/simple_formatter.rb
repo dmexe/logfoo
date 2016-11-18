@@ -11,7 +11,7 @@ module Logfoo ; class SimpleFormatter < LogfmtFormatter
     attrs.delete(:backtrace)
     str = []
     str << "#{remove_nl format_hash(line.to_h)}\n"
-    if entry.is_a?(ErrLine)
+    if line.is_a?(ErrLine)
       str << format_exception(line)
     end
     str.join("")
