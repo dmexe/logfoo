@@ -30,7 +30,7 @@ end
   formatters/logfmt_formatter
   formatters/simple_formatter
   appenders/io_appender
-  measure
+  timed
   app
   context
   mixin

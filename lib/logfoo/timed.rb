@@ -1,4 +1,4 @@
-module Logfoo ; Measure = Struct.new(:source) do
+module Logfoo ; Timed = Struct.new(:source) do
   def benchmark(level, message, payload, block)
     payload    ||= {}
     time_start   = Time.now.to_f

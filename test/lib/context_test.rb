@@ -174,9 +174,9 @@ describe Logfoo::Context do
     assert_match(/thread=#{tid}/,          log_stderr[1])
   end
 
-  it "should measure block" do
+  it "should timed block" do
     log = Logfoo.get_logger(self.class)
-    re  = log.measure.info("message") do
+    re  = log.timed.info("message") do
       sleep 0.1
       :ok
     end
@@ -191,9 +191,9 @@ describe Logfoo::Context do
     assert_match(/duration=0\.10/, log_stdout[0])
   end
 
-  it "should measure block with arguments" do
+  it "should timed block with arguments" do
     log = Logfoo.get_logger(self.class)
-    re  = log.measure.info("message") do |p|
+    re  = log.timed.info("message") do |p|
       p[:arity] = 1
       sleep 0.1
       :ok

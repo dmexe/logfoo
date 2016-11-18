@@ -1,6 +1,6 @@
 module Logfoo ; class Context
 
-  attr_reader :level, :name, :thread_id, :measure
+  attr_reader :level, :name, :thread_id, :timed
 
   THREAD_CONTEXT = :"logfoo_context"
 
@@ -9,7 +9,7 @@ module Logfoo ; class Context
     @name    = name
     @level   = Logfoo::DEBUG
     @context = context || {}
-    @measure = Measure.new(self)
+    @timed   = Timed.new(self)
   end
 
   def level=(level)
