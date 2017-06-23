@@ -4,8 +4,11 @@ pipeline {
     stage('1') {
       steps {
         parallel(
-          "1": {
-            sh 'ls -la'
+          "bundle": {
+            sh '''ls -la
+ruby --version
+
+bundle install'''
             
           },
           "222": {
