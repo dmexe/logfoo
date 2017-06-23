@@ -11,6 +11,11 @@ pipeline {
           "222": {
             sh 'echo 2'
             
+          },
+          "1111": {
+            build '1'
+            waitUntil()
+            
           }
         )
       }
